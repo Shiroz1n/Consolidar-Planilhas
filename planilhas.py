@@ -35,15 +35,39 @@ def consolidar_planilhas_vendas(pasta_entrada, arquivo_saida): #pasta_entrada: p
     print(f"\n Consolidação Concluída")
     print(f"Arquivo salvo: {arquivo_saida}")
     print(f"Total de registros: {len(df_consolidado)}")
-    print(f"COlunas: {','.join(df_consolidado.columns)}")
+    print(f"COlunas: {','.join(map(str, df_consolidado.columns))}")
 
     return df_consolidado
 
-minha_pasta = '/home/alan/Downloads/files/'
+def analise_basica(df):
+    print(f"\n" + "="*50)
+    print(f"Analise dos dados")
+    print("="*50)
 
-nome_saida = 'consolidado_final.xlsx'
+    print(f"\n Total de linhas: {len(df)}")
+    print(f" Total de colunas: {len(df.columns)}")
 
-tabela_gerada = consolidar_planilhas_vendas(minha_pasta, nome_saida)
+    print("\n Valores nulos por coluna:")
+    nulos = df.isnull().sum()
+    if nulos.sum() > 0:
+        print(nulos[nulos > 0])
+    else:
+        print("Nenhum valor nulo encontrando")
+    
+    colunas_valor = [col for col in df.columns if "valor" in str(col).lower() or 'preco' in str(col).lower()]
+    if colunas_valor:
+        print(f"\n Estatisticas de {colunas_valor[0]}:")
+        print(f" Total: R$ {df[colunas_valor[0]].sum():,.2f}")
+        print(f" Media: R$ {df[colunas_valor[0]].mean():,.2f}")
+        print(f"Minimo: R$ {df[colunas_valor[0]].min():,.2f}")
+        print(f" Maximo: R$ {df[colunas_valor[0]].max():,.2f}")
 
-if tabela_gerada is not None:
-    print("Deu certo")
+if __name__ == "__main__":
+
+    pasta_vendas = "/home/alan/Downloads/files/"
+    arquivo_final = "vendas_consolidadas.xlsx"
+
+    df_resultado = consolidar_planilhas_vendas(pasta_vendas, arquivo_final)
+
+    if df_resultado is not None:
+        analise_basica(df_resultado)
